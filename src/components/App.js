@@ -71,6 +71,8 @@ class App extends Component {
     this.getMarkerInfo(marker);
     this.state.infowindow.setContent("Loading Data...");
 
+    
+
     var locations = [];
     this.state.locations.forEach(function(location) {
       var titleName = location.name + " - " + location.type;
@@ -97,6 +99,59 @@ class App extends Component {
     });
   }
 
+  getMarkerInfo(marker) {
+    var self = this;
+
+    // Add the api keys for foursquare
+    var clientId = "NUZ40RTJWGUMHKDDWRJBWYM5ZETQKDVHHOQ42AQ03FIOFOJG";
+    var clientSecret = "UY1AJFUZPUTVQFOAZDKGKWLAMS15HKNISQ3LLV24FZ115YH2";
+
+    // Build the api endpoint
+    var url =
+      "https://api.foursquare.com/v2/venues/search?client_id=" +
+      clientId +
+      "&client_secret=" +
+      clientSecret +
+      "&v=20130815&ll=" +
+      marker.getPosition().lat() +
+      "," +
+      marker.getPosition().lng() +
+      "&limit=1";
+    fetch(url)
+      .then(function(response) {
+        if (response.status !== 200) {
+          self.state.infowindow.setContent("Sorry data can't be loaded");
+          return;
+        }
+
+        response.json().then(function(data) {
+          console.log(data);
+
+          var location_data = data.response.venues[0];
+          var place = `<h3>${location_data.name}</h3>`;
+          var street = `<p>${location_data.location.formattedAddress[0]}</p>`;
+          var contact = "";
+          if (location_data.contact.phone)
+            contact = `<p><small>${location_data.contact.phone}</small></p>`;
+          var checkinsCount =
+            "<b>Number of CheckIn: </b>" +
+            location_data.stats.checkinsCount +
+            "<br>";
+          var readMore =
+            '<a href="https://foursquare.com/v/' +
+            location_data.id +
+            '" target="_blank">Read More on <b>Foursquare Website</b></a>';
+          self.state.infowindow.setContent(
+            place + street + contact + checkinsCount + readMore
+          );
+        });
+      })
+      .catch(function(err) {
+        self.state.infowindow.setContent("Can not lead data");
+      });
+  }
+
+  
   render() {
     return <div id="map" />
   }
