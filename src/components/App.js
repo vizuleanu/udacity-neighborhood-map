@@ -120,7 +120,7 @@ class App extends Component {
     fetch(url)
       .then(function(response) {
         if (response.status !== 200) {
-          self.state.infowindow.setContent("Sorry data can't be loaded");
+          self.state.infowindow.setContent("Can not load data");
           return;
         }
 
@@ -130,19 +130,16 @@ class App extends Component {
           var location_data = data.response.venues[0];
           var place = `<h3>${location_data.name}</h3>`;
           var street = `<p>${location_data.location.formattedAddress[0]}</p>`;
-          var contact = "";
-          if (location_data.contact.phone)
-            contact = `<p><small>${location_data.contact.phone}</small></p>`;
-          var checkinsCount =
+          var checkins =
             "<b>Number of CheckIn: </b>" +
-            location_data.stats.checkinsCount +
+            location_data.stats.checkins +
             "<br>";
           var readMore =
             '<a href="https://foursquare.com/v/' +
             location_data.id +
             '" target="_blank">Read More on <b>Foursquare Website</b></a>';
           self.state.infowindow.setContent(
-            place + street + contact + checkinsCount + readMore
+            place + street + checkins + readMore
           );
         });
       })
@@ -151,7 +148,16 @@ class App extends Component {
       });
   }
 
-  
+  closeInfoWindow() {
+    if (this.state.previewmarker) {
+      this.state.previewmarker.setAnimation(null);
+    }
+    this.setState({
+      previewmarker: ""
+    });
+    this.state.infowindow.close();
+  }
+
   render() {
     return <div id="map" />
   }
