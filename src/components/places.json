@@ -1,0 +1,32 @@
+[
+  {
+    "name": "Museum of Universal Ethnography",
+    "type": "History Museum",
+    "latitude": 45.797598,
+    "longitude": 24.151079
+  },
+  {
+    "name": "The Council Tower",
+    "type": "Landmark",
+    "latitude": 45.797632,
+    "longitude": 24.152147
+  },
+  {
+    "name": "Natural History Museum",
+    "type": "History Museum",
+    "latitude": 45.795236, 
+    "longitude": 24.154623
+  },
+  {
+    "name": "The Bridge of Lies",
+    "type": "Bridge",
+    "latitude": 45.798356,
+    "longitude": 24.150779 
+  },
+  {
+    "name": "Brukenthal National Museum",
+    "type": "Art Museum",
+    "latitude": 45.796555, 
+    "longitude": 24.150667  
+  }
+]
