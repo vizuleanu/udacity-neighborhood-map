@@ -1,10 +1,8 @@
 import React, { Component } from "react";
-import Place from "./Place";
+import List from "./List";
 
-class LocationList extends Component {
-  /**
-   * Constructor
-   */
+class ListOfLocations extends Component {
+
   constructor(props) {
     super(props);
     this.state = {
@@ -16,15 +14,12 @@ class LocationList extends Component {
     this.filterLocations = this.filterLocations.bind(this);
   }
 
-  /**
-   * Filter Locations based on user query
-   */
-  filterLocations(event) {
-    this.props.closeInfoWindow();
-    const { value } = event.target;
+  filterLocations(e) {
+    this.props.infoWindowClose();
+    const {value} = e.target;
     var locations = [];
-    this.props.alllocations.forEach(function(location) {
-      if (location.longname.toLowerCase().indexOf(value.toLowerCase()) >= 0) {
+    this.props.placesAll.forEach(function(location) {
+      if (location.name.toLowerCase().indexOf(value.toLowerCase()) >= 0) {
         location.marker.setVisible(true);
         locations.push(location);
       } else {
@@ -40,19 +35,16 @@ class LocationList extends Component {
 
   componentWillMount() {
     this.setState({
-      locations: this.props.alllocations
+      locations: this.props.placesAll
     });
   }
 
-  /**
-   * Render function of LocationList
-   */
   render() {
-    var locationlist = this.state.locations.map(function(listItem, index) {
+    var locationList = this.state.locations.map(function(listItem, index) {
       return (
-        <Place
+        <List
           key={index}
-          openInfoWindow={this.props.openInfoWindow.bind(this)}
+          infoWindowOpen={this.props.infoWindowOpen.bind(this)}
           data={listItem}
         />
       );
@@ -71,11 +63,11 @@ class LocationList extends Component {
           onChange={this.filterLocations}
         />
         <ul className="location-list">
-          {this.state.suggestions && locationlist}
+          {this.state.suggestions && locationList}
         </ul>
       </div>
     );
   }
 }
 
-export default LocationList;
+export default ListOfLocations;

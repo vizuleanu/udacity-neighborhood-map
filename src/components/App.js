@@ -1,52 +1,45 @@
 import React, { Component } from "react";
+import ListOfLocations from "./ListOfLocations";
 
 class App extends Component {
-  /* Constructor function*/
+
   constructor(props) {
     super(props);
     this.state = {
-      locations: require("./locations.json"),
+      placesAll: require("./locations.json"),
       map: "",
       infowindow: "",
-      previewmarker: ""
+      previewMarker: ""
     };
 
     this.initMap = this.initMap.bind(this);
-    this.openInfoWindow = this.openInfoWindow.bind(this);
-    this.closeInfoWindow = this.closeInfoWindow.bind(this);
+    this.infoWindowOpen = this.infoWindowOpen.bind(this);
+    this.infoWindowClose = this.infoWindowClose.bind(this);
   }
 
   componentDidMount() {
-    // initMap() function for Google Maps to invoke (added to global scope)
+
     window.initMap = this.initMap;
-    // Google Maps script
-    loadMap(
+    loadGoogleMap(
       "https://maps.googleapis.com/maps/api/js?key=AIzaSyAO8w8urB3r0vivj2XtKCyRIuF15TFLWCA&callback=initMap"
     );
   }
 
-  /* Init map on script load */
   initMap() {
     var self = this;
 
     var viewMap = document.getElementById("map");
     viewMap.style.height = window.innerHeight + "px";
     var map = new window.google.maps.Map(viewMap, {
-      center: {lat: 3.885441, lng: 11.514515},
-      zoom: 14,
+      center: { lat: 45.796992, lng: 24.151005 },
+      zoom: 15,
       mapTypeControl: false
-    });
-
-    window.google.maps.event.addDomListener(window, "resize", function() {
-      var center = map.getCenter();
-      window.google.maps.event.trigger(map, "resize");
-      self.state.map.setCenter(center);
     });
 
     var InfoWindow = new window.google.maps.InfoWindow({});
 
     window.google.maps.event.addListener(InfoWindow, "closeclick", function() {
-      self.closeInfoWindow();
+      self.infoWindowClose();
     });
 
     this.setState({
@@ -54,28 +47,19 @@ class App extends Component {
       infowindow: InfoWindow
     });
 
-    window.google.maps.event.addListener(map, "click", function() {
-      self.closeInfoWindow();
+    window.google.maps.event.addDomListener(window, "resize", function() {
+      var centerMap = map.getCenter();
+      window.google.maps.event.trigger(map, "resize");
+      self.state.map.setCenter(centerMap);
     });
-  }
 
-  openInfoWindow(marker) {
-    this.closeInfoWindow();
-    this.state.infowindow.open(this.state.map, marker);
-    marker.setAnimation(window.google.maps.Animation.BOUNCE);
-    this.setState({
-      prevmarker: marker
-    }); 
-    this.state.map.setCenter(marker.getPosition());
-    this.state.map.panBy(0, -200);
-    this.getMarkerInfo(marker);
-    this.state.infowindow.setContent("Loading Data...");
+    window.google.maps.event.addListener(map, "click", function() {
+      self.infoWindowClose();
+    });
 
-    
-
-    var locations = [];
-    this.state.locations.forEach(function(location) {
-      var titleName = location.name + " - " + location.type;
+    var placesAll = [];
+    this.state.placesAll.forEach(function(location) {
+      var name = location.name + " - " + location.type;
       var marker = new window.google.maps.Marker({
         position: new window.google.maps.LatLng(
           location.latitude,
@@ -86,95 +70,104 @@ class App extends Component {
       });
 
       marker.addListener("click", function() {
-        self.openInfoWindow(marker);
+        self.infoWindowOpen(marker);
       });
 
-      location.titleName = titleName;
+      location.name = name;
       location.marker = marker;
       location.display = true;
-      locations.push(location);
+      placesAll.push(location);
     });
     this.setState({
-      locations: locations
+      placesAll: placesAll
     });
   }
+
+  infoWindowOpen(marker) {
+    this.infoWindowClose();
+    this.state.infowindow.open(this.state.map, marker);
+    marker.setAnimation(window.google.maps.Animation.BOUNCE);
+    this.setState({
+      previewMarker: marker
+    });
+    this.getMarkerInfo(marker);
+    this.state.map.setCenter(marker.getPosition());
+    this.state.map.panBy(0, -50);
+  }
+
 
   getMarkerInfo(marker) {
     var self = this;
 
-    // Add the api keys for foursquare
+    // Foursquare API key and secret
     var clientId = "NUZ40RTJWGUMHKDDWRJBWYM5ZETQKDVHHOQ42AQ03FIOFOJG";
     var clientSecret = "UY1AJFUZPUTVQFOAZDKGKWLAMS15HKNISQ3LLV24FZ115YH2";
 
-    // Build the api endpoint
     var url =
-      "https://api.foursquare.com/v2/venues/search?client_id=" +
-      clientId +
-      "&client_secret=" +
-      clientSecret +
-      "&v=20130815&ll=" +
-      marker.getPosition().lat() +
-      "," +
-      marker.getPosition().lng() +
-      "&limit=1";
+      "https://api.foursquare.com/v2/venues/search?client_id=" + clientId +
+      "&client_secret=" + clientSecret + "&v=20130815&ll=" +
+      marker.getPosition().lat() + "," + marker.getPosition().lng() + "&limit=1";
+
     fetch(url)
       .then(function(response) {
         if (response.status !== 200) {
-          self.state.infowindow.setContent("Can not load data");
+          self.state.infowindow.setContent("Unable to load");
           return;
         }
 
         response.json().then(function(data) {
           console.log(data);
 
-          var location_data = data.response.venues[0];
-          var place = `<h3>${location_data.name}</h3>`;
-          var street = `<p>${location_data.location.formattedAddress[0]}</p>`;
-          var checkins =
-            "<b>Number of CheckIn: </b>" +
-            location_data.stats.checkins +
-            "<br>";
-          var readMore =
+          var locationInfo = data.response.venues[0];
+          var site = `<h3>${locationInfo.name}</h3>`;
+          var address = `<p>${locationInfo.location.formattedAddress[0]}</p>`;
+          var moreInfo =
             '<a href="https://foursquare.com/v/' +
-            location_data.id +
-            '" target="_blank">Read More on <b>Foursquare Website</b></a>';
+            locationInfo.id + '" target="_blank">Read More on <b>Foursquare Website</b></a>';
           self.state.infowindow.setContent(
-            place + street + checkins + readMore
+            site + address + moreInfo
           );
         });
       })
       .catch(function(err) {
-        self.state.infowindow.setContent("Can not lead data");
+        self.state.infowindow.setContent("Unable to load");
       });
   }
 
-  closeInfoWindow() {
-    if (this.state.previewmarker) {
-      this.state.previewmarker.setAnimation(null);
+  infoWindowClose() {
+    if (this.state.previewMarker) {
+      this.state.previewMarker.setAnimation(null);
     }
     this.setState({
-      previewmarker: ""
+      previewarker: ""
     });
     this.state.infowindow.close();
   }
 
   render() {
-    return <div id="map" />
+    return (
+      <div>
+        <ListOfLocations
+          placesAll={this.state.placesAll}
+          infoWindowOpen={this.infoWindowOpen}
+          infoWindowClose={this.infoWindowClose}
+          key="100"
+        />
+        <div id="map" />
+      </div>
+    );
   }
-
 }
 
 export default App;
 
-/* Load Google Maps */
-function loadMap(src) {
-  var reference = window.document.getElementsByTagName("script")[0];
+function loadGoogleMap(src) {
+  var ref = window.document.getElementsByTagName("script")[0];
   var script = window.document.createElement("script");
-  script.src = src;
   script.async = true;
+  script.src = src;
   script.onerror = function() {
-    document.write("Google Maps can not be loaded");
+    document.write("Can not load GoogleMaps");
   };
-  reference.parentNode.insertBefore(script, reference);
+  ref.parentNode.insertBefore(script, ref);
 }
-
