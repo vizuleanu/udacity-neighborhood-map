@@ -42,7 +42,36 @@ class App extends Component {
       window.google.maps.event.trigger(map, "resize");
       self.state.map.setCenter(center);
     });
+
+    var InfoWindow = new window.google.maps.InfoWindow({});
+
+    window.google.maps.event.addListener(InfoWindow, "closeclick", function() {
+      self.closeInfoWindow();
+    });
+
+    this.setState({
+      map: map,
+      infowindow: InfoWindow
+    });
+
+    window.google.maps.event.addListener(map, "click", function() {
+      self.closeInfoWindow();
+    });
   }
+
+  openInfoWindow(marker) {
+    this.closeInfoWindow();
+    this.state.infowindow.open(this.state.map, marker);
+    marker.setAnimation(window.google.maps.Animation.BOUNCE);
+    this.setState({
+      prevmarker: marker
+    }); 
+    this.state.map.setCenter(marker.getPosition());
+    this.state.map.panBy(0, -200);
+    this.getMarkerInfo(marker);
+    this.state.infowindow.setContent("Loading Data...");
+  }
+
   render() {
     return <div id="map" />
   }
