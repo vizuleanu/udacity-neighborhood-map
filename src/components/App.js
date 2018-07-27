@@ -36,8 +36,17 @@ class App extends Component {
       zoom: 14,
       mapTypeControl: false
     });
+
+    window.google.maps.event.addDomListener(window, "resize", function() {
+      var center = map.getCenter();
+      window.google.maps.event.trigger(map, "resize");
+      self.state.map.setCenter(center);
+    });
   }
-  render()
+  render() {
+    return <div id="map" />
+  }
+
 }
 
 export default App;
