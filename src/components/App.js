@@ -70,6 +70,31 @@ class App extends Component {
     this.state.map.panBy(0, -200);
     this.getMarkerInfo(marker);
     this.state.infowindow.setContent("Loading Data...");
+
+    var locations = [];
+    this.state.locations.forEach(function(location) {
+      var titleName = location.name + " - " + location.type;
+      var marker = new window.google.maps.Marker({
+        position: new window.google.maps.LatLng(
+          location.latitude,
+          location.longitude
+        ),
+        animation: window.google.maps.Animation.DROP,
+        map: map
+      });
+
+      marker.addListener("click", function() {
+        self.openInfoWindow(marker);
+      });
+
+      location.titleName = titleName;
+      location.marker = marker;
+      location.display = true;
+      locations.push(location);
+    });
+    this.setState({
+      locations: locations
+    });
   }
 
   render() {
