@@ -8,8 +8,8 @@ class App extends Component {
     this.state = {
       placesAll: require("./locations.json"),
       map: "",
+      previewMarker: "",
       infowindow: "",
-      previewMarker: ""
     };
 
     this.initMap = this.initMap.bind(this);
@@ -30,10 +30,11 @@ class App extends Component {
 
     var viewMap = document.getElementById("map");
     viewMap.style.height = window.innerHeight + "px";
+
     var map = new window.google.maps.Map(viewMap, {
       center: { lat: 45.796992, lng: 24.151005 },
-      zoom: 15,
-      mapTypeControl: false
+      mapTypeControl: false,
+      zoom: 15
     });
 
     var InfoWindow = new window.google.maps.InfoWindow({});
@@ -65,19 +66,20 @@ class App extends Component {
           location.latitude,
           location.longitude
         ),
+        map: map,
         animation: window.google.maps.Animation.DROP,
-        map: map
       });
 
       marker.addListener("click", function() {
         self.infoWindowOpen(marker);
       });
 
+      location.display = true;
       location.name = name;
       location.marker = marker;
-      location.display = true;
       placesAll.push(location);
     });
+
     this.setState({
       placesAll: placesAll
     });
@@ -90,13 +92,13 @@ class App extends Component {
     this.setState({
       previewMarker: marker
     });
-    this.getMarkerInfo(marker);
-    this.state.map.setCenter(marker.getPosition());
     this.state.map.panBy(0, -50);
+    this.getMarker(marker);
+    this.state.map.setCenter(marker.getPosition());
   }
 
 
-  getMarkerInfo(marker) {
+  getMarker(marker) {
     var self = this;
 
     // Foursquare API key and secret
@@ -116,14 +118,13 @@ class App extends Component {
         }
 
         response.json().then(function(data) {
-          console.log(data);
+          console.log(data);//objects response from foursquare
 
           var locationInfo = data.response.venues[0];
           var site = `<h3>${locationInfo.name}</h3>`;
           var address = `<p>${locationInfo.location.formattedAddress[0]}</p>`;
-          var moreInfo =
-            '<a href="https://foursquare.com/v/' +
-            locationInfo.id + '" target="_blank">Read More on <b>Foursquare Website</b></a>';
+          var moreInfo ='<a href="https://foursquare.com/v/' + locationInfo.id + 
+          '" target="_blank">See additional details on <em>Foursquare<em></a>';
           self.state.infowindow.setContent(
             site + address + moreInfo
           );
