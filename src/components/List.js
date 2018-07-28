@@ -5,7 +5,7 @@ class List extends React.Component {
   render() {
     return (
       <li
-        className="listSearch"
+        className="locations"
         role="button"
         tabIndex="0"
         onKeyPress={this.props.infoWindowOpen.bind(this, this.props.data.marker)}

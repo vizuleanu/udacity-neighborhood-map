@@ -6,64 +6,62 @@ class ListOfLocations extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      locations: "",
+      places: "",
       query: "",
-      suggestions: true
     };
 
-    this.filterLocations = this.filterLocations.bind(this);
+    this.placesFilter = this.placesFilter.bind(this);
   }
 
-  filterLocations(e) {
+  placesFilter(e) {
     this.props.infoWindowClose();
     const {value} = e.target;
-    var locations = [];
-    this.props.placesAll.forEach(function(location) {
-      if (location.name.toLowerCase().indexOf(value.toLowerCase()) >= 0) {
-        location.marker.setVisible(true);
-        locations.push(location);
+    var places = [];
+    this.props.placesAll.forEach(function(place) {
+      if (place.name.toLowerCase().indexOf(value.toLowerCase()) >= 0) {
+        place.marker.setVisible(true);
+        place.push(place);
       } else {
-        location.marker.setVisible(false);
+        place.marker.setVisible(false);
       }
     });
 
     this.setState({
-      locations: locations,
+      places: places,
       query: value
     });
   }
 
   componentWillMount() {
     this.setState({
-      locations: this.props.placesAll
+      places: this.props.placesAll
     });
   }
 
   render() {
-    var locationList = this.state.locations.map(function(listItem, index) {
+    var placesList = this.state.places.map(function(listItem, index) {
       return (
         <List
-          key={index}
           infoWindowOpen={this.props.infoWindowOpen.bind(this)}
+          key={index}
           data={listItem}
         />
       );
     }, this);
 
     return (
-      <div className="search-area">
+      <div className="sites">
         <input
+          id="locationSearch"
+          type="search"
           role="search"
+          placeholder="search"
           aria-labelledby="filter"
-          id="search-field"
-          className="search-input"
-          type="text"
-          placeholder="Filter"
           value={this.state.query}
-          onChange={this.filterLocations}
+          onChange={this.placesFilter}
         />
-        <ul className="location-list">
-          {this.state.suggestions && locationList}
+        <ul className="placesList">
+          {placesList}
         </ul>
       </div>
     );
