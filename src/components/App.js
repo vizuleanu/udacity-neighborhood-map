@@ -18,7 +18,7 @@ class App extends Component {
   }
 
   componentDidMount() {
-
+    // bind initMap() function to the global scope
     window.initMap = this.initMap;
     loadGoogleMap(
       "https://maps.googleapis.com/maps/api/js?key=AIzaSyAO8w8urB3r0vivj2XtKCyRIuF15TFLWCA&callback=initMap"
@@ -48,6 +48,7 @@ class App extends Component {
       infowindow: InfoWindow
     });
 
+    // resise map for different devices
     window.google.maps.event.addDomListener(window, "resize", function() {
       var centerMap = map.getCenter();
       window.google.maps.event.trigger(map, "resize");
@@ -107,7 +108,7 @@ class App extends Component {
 
     var url =
       "https://api.foursquare.com/v2/venues/search?client_id=" + clientId +
-      "&client_secret=" + clientSecret + "&v=20130815&ll=" +
+      "&client_secret=" + clientSecret + "&v=20180725&ll=" +
       marker.getPosition().lat() + "," + marker.getPosition().lng() + "&limit=1";
 
     fetch(url)
@@ -121,7 +122,7 @@ class App extends Component {
           console.log(data);//objects response from foursquare
 
           var locationInfo = data.response.venues[0];
-          var site = `<h3>${locationInfo.name}</h3>`;
+          var site = `<h3>${locationInfo.name}</h3>`
           var address = `<p>${locationInfo.location.formattedAddress[0]}</p>`;
           var moreInfo ='<a href="https://foursquare.com/v/' + locationInfo.id + 
           '" target="_blank">See additional details on <em>Foursquare<em></a>';
@@ -161,7 +162,7 @@ class App extends Component {
 }
 
 export default App;
-
+//load GoogleMap on page
 function loadGoogleMap(src) {
   var ref = window.document.getElementsByTagName("script")[0];
   var script = window.document.createElement("script");

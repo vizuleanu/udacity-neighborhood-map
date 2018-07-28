@@ -28,5 +28,17 @@
     "type": "Art Museum",
     "latitude": 45.796555, 
     "longitude": 24.150667  
+  },
+  {
+    "name": "Holy Trinity Cathedral",
+    "type": "Church",
+    "latitude": 45.794686, 
+    "longitude": 24.147975
+  },
+  {
+    "name": "Citadel Park",
+    "type": "Park",
+    "latitude": 45.793280, 
+    "longitude": 24.151238
   }
 ]
