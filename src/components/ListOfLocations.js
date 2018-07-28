@@ -20,7 +20,7 @@ class ListOfLocations extends Component {
     this.props.placesAll.forEach(function(place) {
       if (place.name.toLowerCase().indexOf(value.toLowerCase()) >= 0) {
         place.marker.setVisible(true);
-        place.push(place);
+        places.push(place);
       } else {
         place.marker.setVisible(false);
       }
