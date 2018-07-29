@@ -34,9 +34,9 @@ class App extends Component {
     var map = new window.google.maps.Map(viewMap, {
       center: { lat: 45.796992, lng: 24.151005 },
       mapTypeControl: false,
-      zoom: 15
+      zoom: 14
     });
-
+  
     var InfoWindow = new window.google.maps.InfoWindow({});
 
     window.google.maps.event.addListener(InfoWindow, "closeclick", function() {
@@ -93,9 +93,10 @@ class App extends Component {
     this.setState({
       previewMarker: marker
     });
-    this.state.map.panBy(0, -50);
     this.getMarker(marker);
     this.state.map.setCenter(marker.getPosition());
+    //off center map so that marker info text does not override with the locations
+    this.state.map.panBy(0, -140);
   }
 
 

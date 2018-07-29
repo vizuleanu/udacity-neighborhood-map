@@ -30,8 +30,10 @@ body {
 }
 
 #locationSearch {
+  font-family: Tahoma, Verdana, sans-serif;
   width: 150px;
   padding: 5px;
   border-radius: 5px;
+  font-weight: 500;
 }
 
